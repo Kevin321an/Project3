@@ -27,8 +27,7 @@
         and the Uefa Champions League.
         All Matches data are acquired from football-data.org free API.
         All team Logos are acquired from http://hdlogo.wordpress.com/ upon requesting permission form the owner.
-        The original version of this app was created by Yahia Khalid Ibn El Walid Ahmed, and a modified version is given to students in the Udacity Android Nanodegree program.
-        To report any bugs,or suggestions do not hesitate to send a mail to y.k.ibnelwalid@gmail.com.
+        The original version of this app was created by Yahia Khalid Ibn El Walid Ahmed, and Kevin Zhang implement the Widget, Accessibility and refactor the code
 
         During the off season, fake data will be added to the app.
     </string>
@@ -41,6 +40,8 @@
     <string name="away_team">Away Team <xliff:g id="team">%1$s</xliff:g></string>
     <string name="date">date <xliff:g id="time">%1$s</xliff:g></string>
     <string name="score">score<xliff:g id="score">%1$s</xliff:g></string>
+
+    <string name="share_button_descript">Share information to the friend</string>
 
 <!--    Widget title-->
     <string name="title_widget_match">match</string>
