@@ -71,14 +71,14 @@ public class AddBook extends Fragment implements LoaderManager.LoaderCallbacks<C
 
             @Override
             public void afterTextChanged(Editable s) {
+                instruction();
                 String ean = s.toString();
                 //catch ISBN 10 digit numbers
                 if (ean.length() == 10 && !ean.startsWith("978")) {
                     ean = "978" + ean;
                 }
                 if (ean.length() < 13) {
-                    instruction();
-                    clearFields();
+                    if (!hasPreBook) clearFields();
                     return;
                 }
 
@@ -191,13 +191,14 @@ public class AddBook extends Fragment implements LoaderManager.LoaderCallbacks<C
         );
     }
     private  static boolean hasaBook;
+    private  static boolean hasPreBook;
     @Override
     public void onLoadFinished(android.support.v4.content.Loader<Cursor> loader, Cursor data) {
         if (!data.moveToFirst()) {
             hasaBook=false;
             return;
         }
-        hasaBook=true;
+        hasPreBook=true;
         String bookTitle = data.getString(data.getColumnIndex(AlexandriaContract.BookEntry.TITLE));
         ((TextView) rootView.findViewById(R.id.bookTitle)).setText(bookTitle);
 
@@ -205,7 +206,7 @@ public class AddBook extends Fragment implements LoaderManager.LoaderCallbacks<C
         ((TextView) rootView.findViewById(R.id.bookSubTitle)).setText(bookSubTitle);
 
         String authors = data.getString(data.getColumnIndex(AlexandriaContract.AuthorEntry.AUTHOR));
-        if (!authors.equals("")){
+        if (!(authors==null||authors.equals(""))){
             String[] authorsArr = authors.split(",");
             ((TextView) rootView.findViewById(R.id.authors)).setLines(authorsArr.length);
         }
@@ -222,6 +223,7 @@ public class AddBook extends Fragment implements LoaderManager.LoaderCallbacks<C
 
         rootView.findViewById(R.id.save_button).setVisibility(View.VISIBLE);
         rootView.findViewById(R.id.delete_button).setVisibility(View.VISIBLE);
+        rootView.findViewById(R.id.instruction).setVisibility(View.INVISIBLE);
     }
 
     @Override
