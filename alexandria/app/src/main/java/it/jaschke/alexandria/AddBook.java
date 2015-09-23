@@ -31,6 +31,9 @@ public class AddBook extends Fragment implements LoaderManager.LoaderCallbacks<C
     private final int LOADER_ID = 1;
     private View rootView;
     private final String EAN_CONTENT="eanContent";
+    private  static boolean hasaBook;
+    private  static boolean hasPreBook; // flag when there at least one book be loaded
+    private  String preEanStr;//store the last valuable ISBN number
    /* private static final String SCAN_FORMAT = "scanFormat";
     private static final String SCAN_CONTENTS = "scanContents";
 
@@ -122,6 +125,7 @@ public class AddBook extends Fragment implements LoaderManager.LoaderCallbacks<C
         rootView.findViewById(R.id.save_button).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+                clearFields();
                 ean.setText("");
             }
         });
@@ -130,11 +134,14 @@ public class AddBook extends Fragment implements LoaderManager.LoaderCallbacks<C
         rootView.findViewById(R.id.delete_button).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+
                 Intent bookIntent = new Intent(getActivity(), BookService.class);
-                bookIntent.putExtra(BookService.EAN, ean.getText().toString());
+                //bookIntent.putExtra(BookService.EAN, ean.getText().toString());
+                bookIntent.putExtra(BookService.EAN, preEanStr);
                 bookIntent.setAction(BookService.DELETE_BOOK);
                 getActivity().startService(bookIntent);
                 ean.setText("");
+                clearFields();
             }
         });
 
@@ -190,14 +197,14 @@ public class AddBook extends Fragment implements LoaderManager.LoaderCallbacks<C
                 null
         );
     }
-    private  static boolean hasaBook;
-    private  static boolean hasPreBook;
+
     @Override
     public void onLoadFinished(android.support.v4.content.Loader<Cursor> loader, Cursor data) {
         if (!data.moveToFirst()) {
             hasaBook=false;
             return;
         }
+        preEanStr=ean.getText().toString();
         hasPreBook=true;
         String bookTitle = data.getString(data.getColumnIndex(AlexandriaContract.BookEntry.TITLE));
         ((TextView) rootView.findViewById(R.id.bookTitle)).setText(bookTitle);
@@ -206,10 +213,11 @@ public class AddBook extends Fragment implements LoaderManager.LoaderCallbacks<C
         ((TextView) rootView.findViewById(R.id.bookSubTitle)).setText(bookSubTitle);
 
         String authors = data.getString(data.getColumnIndex(AlexandriaContract.AuthorEntry.AUTHOR));
-        if (!(authors==null||authors.equals(""))){
-            String[] authorsArr = authors.split(",");
-            ((TextView) rootView.findViewById(R.id.authors)).setLines(authorsArr.length);
+        if (authors==null){
+          authors="";
         }
+        String[] authorsArr = authors.split(",");
+        ((TextView) rootView.findViewById(R.id.authors)).setLines(authorsArr.length);
 
         ((TextView) rootView.findViewById(R.id.authors)).setText(authors.replace(",","\n"));
         String imgUrl = data.getString(data.getColumnIndex(AlexandriaContract.BookEntry.IMAGE_URL));
@@ -255,7 +263,6 @@ public class AddBook extends Fragment implements LoaderManager.LoaderCallbacks<C
 
     //delivery  isbn under addBook fragment
     public void applyResult(String result){
-
         ean = (EditText) getActivity().findViewById(R.id.ean);
         ean.setText("");
         ean.setText(result);
